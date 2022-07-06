@@ -1,10 +1,9 @@
-import { VFC } from 'react'
-import { LocalStateB } from '../components/LocalStateB'
 import { Layout } from '../components/Layout'
+import { LocalStateB } from '../components/LocalStateB'
 
-const LocalStatePageB: VFC = () => {
+const LocalStatePageB = () => {
   return (
-    <Layout title="Local State A">
+    <Layout title="local-state-b">
       <LocalStateB />
     </Layout>
   )

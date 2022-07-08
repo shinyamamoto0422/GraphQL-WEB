@@ -98,7 +98,123 @@ export const GET_USERS_LOCAL = gql`
 
 ## CRUD
 
+#### query の書き方
+
+useQuery を使って、query を実行・データ型を generics で指定・対象の query を指定・返り値を指定する
+
+```typescript
+const { data, error } = useQuery<GetUsersQuery>(GET_USERS, {
+  fetchPolicy: 'cache-and-network',
+})
+```
+
+#### update
+
+query と大体同じ
+
+```typescript
+const [update_users_by_pk] = useMutation<UpdateUserMutation>(UPDATE_USER)
+```
+
+#### create と delete
+
+処理が終わった後に cache が自動的に更新されないようになっており、
+自分で cache の後処理を書いておかないといけない。
+
+- **create**
+  create の処理が終わった後に、update の処理を書かないといけない。
+  toReference に id を渡してあげると、insertUser
+
+```typescript
+const [insert_users_one] = useMutation<CreateUserMutation>(CREATE_USER, {
+  update(cache, { data: { insert_users_one } }) {
+    const cacheId = cache.identify(insert_users_one)
+    cache.modify({
+      fields: {
+        users(existingUsers, { toReference }) {
+          return [toReference(cacheId), ...existingUsers]
+        },
+      },
+    })
+  },
+})
+```
+
+- **delete**
+  後処理について
+  → 既存の cache の配列から今削除した user を filter を使って削除するという処理
+
+1. 今削除した user が delete_users_by_pk を取得
+2. 更新したい field は users なので指定
+3. 第一引数に既存の users を指定（existingUsers）
+4. readField で任意の field の値 を読むことができる
+5. 今回は、一致しない id 以外を filter で残すという処理
+
+```typescript
+const [delete_users_by_pk] = useMutation<DeleteUserMutation>(DELETE_USER, {
+  update(cache, { data: { delete_users_by_pk } }) {
+    cache.modify({
+      fields: {
+        users(existingUsers, { readField }) {
+          return existingUsers.filter(
+            (user) => delete_users_by_pk.id !== readField('id', user)
+          )
+        },
+      },
+    })
+  },
+})
+```
+
 ## CRUD memo
+
+- Dispatch
+- SetStateAction
+  useState で作られた更新用の関数のデータ型で使う
+
+setState のデータ型
+
+```typescript
+const setEditedUser: Dispatch<
+  SetStateAction<{
+    id: string
+    name: string
+  }>
+>
+```
+
+- disabled について
+  *disabled={!editedUser.name}*のような感じで、name が定義されてない時に、true にするという処理を書けば、disabled になる
+
+```typescript
+<button
+  disabled={!editedUser.name}
+  className="disabled:opacity-40 my-3 py-1 px-3 text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl focus:outline-none"
+  data-testid="new"
+  type="submit"
+>
+  {editedUser.id ? 'Update' : 'Create'}
+</button>
+```
+
+- input
+  valuen には、editedUser.name というように、editedUser.name にアクセスすることができる。
+
+```typescript
+<input
+  type="text"
+  className="px-3 py-2 border border-gray-300"
+  placeholder="New User ?"
+  value={editedUser.name}
+  onChange={(e) => {
+    setEditedUser({ ...editedUser, name: e.target.value })
+  }}
+/>
+```
+
+- e.preventDefault()について
+  _e.preventDefault()_ は、submit イベントを抑止するためのもので、submit イベントが発生した時に、このイベントを抑止することができる
+  何も指定しなければ、submit イベントが発生した時に、ページ遷移が発生してしまうらしい。
 
 ## SSG + ISR with apollo client
 

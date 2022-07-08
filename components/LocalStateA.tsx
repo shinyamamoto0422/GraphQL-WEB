@@ -2,6 +2,7 @@ import { useReactiveVar } from '@apollo/client'
 import Link from 'next/link'
 import { ChangeEvent, ChangeEventHandler, FormEvent, useState } from 'react'
 import { todoVar } from '../cache'
+import { Button } from './common/Button'
 
 export const LocalStateA = () => {
   const [input, setInput] = useState('')
@@ -35,17 +36,18 @@ export const LocalStateA = () => {
             setInput(e.target.value)
           }}
         />
-        <button
-          disabled={!input}
+        <Button
           type="submit"
-          className="disabled:opacity-40 mb-3 py-1 px-3 text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl focus:outline-none"
-        >
-          Add New State
-        </button>
+          disabled={!input}
+          title="Add New State"
+          className="disabled:opacity-40 bg-indigo-600 hover:bg-indigo-700 "
+        />
       </form>
-      <Link href="/local-state-b">
-        <a>Next</a>
-      </Link>
+      <Button
+        title="Next"
+        href="/local-state-b"
+        className="bg-indigo-600 hover:bg-indigo-700 "
+      />
     </>
   )
 }

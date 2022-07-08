@@ -1,6 +1,7 @@
 import { useReactiveVar } from '@apollo/client'
 import { todoVar } from '../cache'
 import Link from 'next/link'
+import { Button } from './common/Button'
 
 export const LocalStateB = () => {
   const todos = useReactiveVar(todoVar)
@@ -13,9 +14,11 @@ export const LocalStateB = () => {
           </p>
         )
       })}
-      <Link href="/local-state-a">
-        <a>Back</a>
-      </Link>
+      <Button
+        title="Back"
+        href="/local-state-a"
+        className="bg-indigo-600 hover:bg-indigo-700 "
+      />
     </>
   )
 }

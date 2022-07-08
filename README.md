@@ -265,3 +265,22 @@ yarn build → yarn start
   5. なので、次にアクセスした時に、最新データで表示される
 
 ## custom hooks + useCallback + memo
+
+- handleSubmit の型
+
+```typescript
+handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>
+```
+
+#### useCallback 時の注意点
+
+- 関数の中で state を参照して使っている場合
+  useCallback は最初に関数オブジェクトを作成してそれをそれ以降再利用する
+  useName の state は初期値が使われる。なので、それが再利用される。
+  もし userName が変化しても空の文字列が渡される。
+  ** 必ず第二引数に入れておく！**
+
+こコンポーネントに関連した state が変わったときに、child が再レンダリングされる
+→ 想定通り
+こコンポーネントに関係ない state が変わったときに、child が再レンダリングされない
+→ 最適化された状態

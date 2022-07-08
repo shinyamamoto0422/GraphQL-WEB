@@ -218,4 +218,50 @@ const setEditedUser: Dispatch<
 
 ## SSG + ISR with apollo client
 
+- GetStaticProps とは
+  アプリケーションのビルド時にサーバーサイドで実行される処理
+
+サーバーサイドで initializeApollo を実行して apolloClient を生成する
+await で同期化して data を受け取るようにする
+
+- revalidate
+  incremental static regeneration が有効化される
+
+- CSR
+  client side rendering
+- SSR
+  server side rendering
+- SSG
+  static generation
+- ISR とは
+  incremental static regeneration
+  ブログとかに使う
+  リクエストに対して、静的にビルドされたページを返す＋有効期限を超えたら、非同期で静的ぺーじの再生成を SSR で行う。
+  事前にデータ付きでビルドされたページを返すことができる。
+  なので、JavaScript を無効化したとしても、ページを表示することができる。
+
+#### yarn dev と yarn build
+
+- 普通の時 →yarn dev
+  ローカルサーバーを起動する
+  サーバーサイドレンダリングが全て適用される
+- SSG ISR のページをテストしたい
+
+```
+yarn build → yarn start
+```
+
+プロダクションサーバーをローカルで起動する必要がある
+
+#### 個別ページを作成する
+
+- fallback
+  ture にすると、動的に個別ページを作成できる
+- ISR の原理
+  1. hasura 側で user4 を追加した
+  2. その時にアクセスした人は古い HTML を受けとる形になるので
+  3. user1 . 2 .3 が表示される
+  4. その間に、最新データで HTML が再生成される。
+  5. なので、次にアクセスした時に、最新データで表示される
+
 ## custom hooks + useCallback + memo

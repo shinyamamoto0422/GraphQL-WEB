@@ -284,3 +284,8 @@ handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>
 → 想定通り
 こコンポーネントに関係ない state が変わったときに、child が再レンダリングされない
 → 最適化された状態
+
+## protection of Hasura endpoint
+
+- JWT で守る
+- Hasura admin secret を使って endpoint を守る

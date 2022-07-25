@@ -5,6 +5,18 @@ Next.js Hasura Apollo Client GraphQL を使用して、モダンな Web 開発�
 
 ## state Manegement について
 
+- 通常の RestAPI などの場合
+  Redux・useContext + useState を使って state 管理する
+  **手順**
+  compA でサーバーにアクセスして、データを取得する
+  dispatch を使って、Redux の store にデータを保管する
+  compB で Redux の store からデータを自由に参照する
+
+  - GraphQL の場合
+    compA で query を発行して、データを取得する
+    自動的に cache の方に保存される
+    クライアントサイドでは compB で@client で cache に自由に参照することができる
+
 ## Integration of Next.js/ Apollo Client with Hasura
 
 自動的に正規化される。
@@ -27,6 +39,38 @@ cache を使った state management を行う。
 
 1. redux を使わずに、一度取得したデータを cache に保存される
 2. 好きなページから自由にそのデータにアクセスできるようになる
+
+#### Reactive Variables の定義
+
+makeVar メソッドを使って、reactive variables を作成する
+
+```typescript
+import { makeVar } from '@apollo/client'
+interface Task {
+  title: string
+}
+export const todoVar = makeVar<Task[]>([])
+```
+
+#### reading
+
+```typescript
+const todos = useReactiveVar(todoVar)
+// Output: []
+console.log(todos())
+```
+
+#### modifying
+
+reactive variables の値を作るには、makeVar の引数に値を入れる
+
+```typescript
+const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+  todoVar([...todoVar(), { title: input }])
+  setInput('')
+}
+```
 
 ### useQuery
 
@@ -289,3 +333,7 @@ handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>
 
 - JWT で守る
 - Hasura admin secret を使って endpoint を守る
+
+## Apollo Client とは
+
+アプリケーションのデータを取得、キャッシュ、変更しながら、UI を自動的に更新することができ、またローカルとリモートの両方のデータを GraphQL で管理できる包括的な状態管理ライブラリです。
